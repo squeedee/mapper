@@ -12,4 +12,4 @@
 (expect :e (map [0 2]))
 (expect :f (map [1 2]))
 
-(expect '(:a :b :c :d :e :f) (map-as-list [2 3] map))
+(expect '(:a :b :c :d :e :f) (map-seq [2 3] map))
