@@ -1,7 +1,18 @@
 (ns mapper.csg.operators-test
   (:require [expectations :refer :all]
+            [mapper.util.diff :refer :all]
+            [mapper.core :refer :all]
             [mapper.csg.shapes :refer :all]
             [mapper.csg.operators :refer :all]))
+
+(defrecord NoDiff [dimensions expected-map]
+  CustomPred
+  (expect-fn [_ actual-map] (= false (diff? dimensions actual-map expected-map)))
+  (expected-message [_ _ str-e str-a] (format "expected: %s %s" str-e str-a))
+  (actual-message [_ _ _ _] (format "actual: See visual diff"))
+  (message [_ actual-map _ _] (format "Visual diff ->\n%s"
+                                      (visual-diff (first dimensions)
+                                                   (diff dimensions actual-map expected-map)))))
 
 (def rect1 (rect [1 1 10 10]))
 (def rect2 (rect [8 8 17 17]))
@@ -10,51 +21,28 @@
 
 (def comp1 (union (rect [1 1 10 10])
                   (rect [8 8 17 17])))
-;
-;(expect false (map-differs?
-;                (str "...................."
-;                     ".##########........."
-;                     ".##########........."
-;                     ".##########........."
-;                     ".##########........."
-;                     ".##########........."
-;                     ".##########........."
-;                     ".##########........."
-;                     ".#################.."
-;                     ".#################.."
-;                     ".#################.."
-;                     ".........#########.."
-;                     ".........#########.."
-;                     ".........#########.."
-;                     ".........#########.."
-;                     ".........#########.."
-;                     ".........#########.."
-;                     ".........#########.."
-;                     "...................."
-;                     "....................")
-;                20
-;                comp1))
-;
-;; top left
-;(expect false (comp1 [0 0]))
-;(expect false (comp1 [0 1]))
-;(expect false (comp1 [1 0]))
-;(expect true (comp1 [1 1]))
-;
-;; bottom right
-;(expect false (comp1 [18 18]))
-;(expect false (comp1 [17 18]))
-;(expect false (comp1 [18 17]))
-;(expect true (comp1 [17 17]))
-;
-;; bottom left nook
-;(expect false (comp1 [7 11]))
-;(expect true (comp1 [8 11]))
-;(expect true (comp1 [8 10]))
-;(expect true (comp1 [7 10]))
-;
-;; top right nook
-;(expect false (comp1 [11 7]))
-;(expect true (comp1 [10 7]))
-;(expect true (comp1 [11 8]))
-;(expect true (comp1 [10 8]))
+(def bool-map1
+  (create-map 20 (map #(= %1 \#)
+                      (str "...................."
+                           ".##########........."
+                           ".##########........."
+                           ".##########........."
+                           ".##########........."
+                           ".##########........."
+                           ".##########........."
+                           ".##########........."
+                           ".#################.."
+                           ".#################.."
+                           ".#################.."
+                           ".........#########.."
+                           ".........#########.."
+                           ".........#########.."
+                           ".........#########.."
+                           ".........#########.."
+                           ".........#########.."
+                           ".........#########.."
+                           "...................."
+                           "...................."))))
+
+(expect (->NoDiff [20 20] comp1) comp1)
+(expect (->NoDiff [20 20] comp1) bool-map1)

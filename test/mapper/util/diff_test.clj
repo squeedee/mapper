@@ -18,9 +18,8 @@
 (expect [nil :b nil :d :e]
         (intersection (diff [2 3] map1 map2)))
 
-
-(expect false
+(expect true
         (diff? [2 3] map1 map2))
 
-(expect true
+(expect false
         (diff? [2 3] map1 map1))
