@@ -24,17 +24,3 @@
   (let [diff-result (diff dimensions map-a map-b)]
     (not (and (nil? (left diff-result))
          (nil? (right diff-result))))))
-
-(def diff-translation-rules
-  {false \.
-   true \#
-   nil "!"
-  })
-
-
-;(defn translate [rules diff-result]
-;  (seq-translate rules (intersection diff-result)))
-
-
-(defn visual-diff [width diff-result]
-  )
