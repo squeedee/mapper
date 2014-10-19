@@ -1,6 +1,5 @@
 (ns mapper.util.diff
-  (:require [mapper.util :refer :all]
-            [mapper.core :refer :all]
+  (:require [mapper.core :refer :all]
             [clojure.data :as data]
             [clojure.string :as string]))
 

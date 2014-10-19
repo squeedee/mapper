@@ -1,6 +1,5 @@
 (ns mapper.core
   (:refer-clojure :exclude [map get])
-  (:require [mapper.util :refer :all])
   (:import (clojure.lang Seqable)))
 
 (defprotocol FlatMapping
