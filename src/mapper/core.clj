@@ -1,16 +1,34 @@
 (ns mapper.core
-  (:refer-clojure :exclude [map])
+  (:import (clojure.lang Seqable))
+  (:refer-clojure :exclude [map get])
   (:require [mapper.util :refer :all]))
 
-(defn create-map [width coll]
-  "Creates a map-fn that takes a position paramater to find an entry in the coll"
-  (fn [[x y]]
-    (nth coll (+ x (* y width)))))
+(defprotocol FlatMapping
+  (row-offset [this y])
+  (offset [this x y]))
 
-(defn map-seq [[width height] map]
-  "produces a flat seq from a map-fn"
-  (for [y (range height) x (range width)]
-    (map [x y])))
+(defrecord Dimensions [width height]
+  FlatMapping
+  (row-offset [this y]
+    (* y (:width this)))
+  (offset [this x y]
+    (+ x (row-offset this y))))
 
-;(defrecord AABB
-;  [left top right bottom])
+(defprotocol Lookupable
+  (read-loc [this x y]))
+
+(deftype Map [dimensions map-fn]
+  Lookupable
+  (read-loc [this x y]
+    ((.map-fn this) x y))
+  Seqable
+  (seq [this]
+    (for [y (range (:height dimensions)) x (range (:width dimensions))]
+      (read-loc this x y))))
+
+(defn create-map [dimensions coll]
+  (->Map dimensions
+         (fn [x y]
+           (nth coll
+                (offset dimensions x y)))))
+
