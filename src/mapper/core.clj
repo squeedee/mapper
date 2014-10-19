@@ -1,7 +1,7 @@
 (ns mapper.core
-  (:import (clojure.lang Seqable))
   (:refer-clojure :exclude [map get])
-  (:require [mapper.util :refer :all]))
+  (:require [mapper.util :refer :all])
+  (:import (clojure.lang Seqable)))
 
 (defprotocol FlatMapping
   (row-offset [this y])
@@ -10,7 +10,7 @@
 (defrecord Dimensions [width height]
   FlatMapping
   (row-offset [this y]
-    (* y (:width this)))
+    (* y width))
   (offset [this x y]
     (+ x (row-offset this y))))
 
@@ -20,10 +20,11 @@
 (deftype Map [dimensions map-fn]
   Lookupable
   (read-loc [this x y]
-    ((.map-fn this) x y))
+    (map-fn x y))
   Seqable
   (seq [this]
-    (for [y (range (:height dimensions)) x (range (:width dimensions))]
+    (for [y (range (:height dimensions))
+          x (range (:width dimensions))]
       (read-loc this x y))))
 
 (defn create-map [dimensions coll]
