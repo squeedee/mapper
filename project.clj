@@ -7,4 +7,5 @@
                  [expectations "2.0.12"]]
   :plugins [[lein-expectations "0.0.7"]
             [lein-autoexpect "1.3.0"]
+            [jonase/eastwood "0.1.4"]
             [lein-hiera "0.8.0"]])

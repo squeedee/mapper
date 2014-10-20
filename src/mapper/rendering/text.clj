@@ -5,11 +5,14 @@
 (def bool-translation-rules
   "Translation rules for visualizing boolean maps"
   {false \.
-   true \#})
+   true  \#})
 
-(defn visual-map [rules width seq]
+(defn visual-map
   "Generate a text map from a sequence. Rules specify how the sequence elements are translated."
+  [dimensions seq &
+   {:keys [rule-map]
+    :or   {rule-map bool-translation-rules}}]
   (string/join \newline
                (map #(apply str %1)
-                    (partition width
-                               (seq-translate rules seq)))))
+                    (partition (:width dimensions)
+                               (seq-translate rule-map seq)))))

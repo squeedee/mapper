@@ -13,22 +13,12 @@
   (offset [this x y]
     (+ x (row-offset this y))))
 
-(defprotocol Lookupable
-  (read-loc [this x y]))
+(defn create-map-fn [dimensions coll]
+  (fn [x y]
+    (nth coll
+         (offset dimensions x y))))
 
-(deftype Map [dimensions map-fn]
-  Lookupable
-  (read-loc [this x y]
-    (map-fn x y))
-  Seqable
-  (seq [this]
-    (for [y (range (:height dimensions))
-          x (range (:width dimensions))]
-      (read-loc this x y))))
-
-(defn create-map [dimensions coll]
-  (->Map dimensions
-         (fn [x y]
-           (nth coll
-                (offset dimensions x y)))))
-
+(defn map-fn-seq [dimensions map-fn]
+  (for [y (range (:height dimensions))
+        x (range (:width dimensions))]
+    (map-fn x y)))
