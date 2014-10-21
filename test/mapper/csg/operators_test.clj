@@ -46,37 +46,74 @@
                                             (create-map-from-string dimensions expected-map)))
                         :rule-map diff-translation-rules))))
 
-;; Test shapes ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(def rect1 (rect [1 1 10 10]))
-(def rect2 (rect [8 8 17 17]))
-
 ;; Union ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(def comp1 (union rect1 rect2))
+(let [map-dimensions (->Dimensions 20 20)
+      upper-left-rect (rect [1 1 10 10])
+      lower-right-rect (rect [8 8 17 17])
 
-(def map1
-  (str "...................."
-       ".##########........."
-       ".##########........."
-       ".##########........."
-       ".##########........."
-       ".##########........."
-       ".##########........."
-       ".##########........."
-       ".#################.."
-       ".#################.."
-       ".#################.."
-       "........##########.."
-       "........##########.."
-       "........##########.."
-       "........##########.."
-       "........##########.."
-       "........##########.."
-       "........##########.."
-       "...................."
-       "...................."))
+      union-map-fn (union upper-left-rect lower-right-rect)
 
-(def map-dimensions (->Dimensions 20 20))
+      expected-string-map (str
+                 "...................."
+                 ".##########........."
+                 ".##########........."
+                 ".##########........."
+                 ".##########........."
+                 ".##########........."
+                 ".##########........."
+                 ".##########........."
+                 ".#################.."
+                 ".#################.."
+                 ".#################.."
+                 "........##########.."
+                 "........##########.."
+                 "........##########.."
+                 "........##########.."
+                 "........##########.."
+                 "........##########.."
+                 "........##########.."
+                 "...................."
+                 "....................")]
 
-(expect (->NoDiff map-dimensions map1) comp1)
+  (expect (->NoDiff map-dimensions expected-string-map) union-map-fn))
+
+;; Subtraction ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(let [map-dimensions (->Dimensions 10 10)
+      outer-rect (rect [1 1 8 8])
+      inner-rect (rect [2 2 7 7])
+
+      subtraction-map-fn (subtraction outer-rect inner-rect)
+
+      expected-string-map (str
+                            ".........."
+                            ".########."
+                            ".#......#."
+                            ".#......#."
+                            ".#......#."
+                            ".#......#."
+                            ".#......#."
+                            ".#......#."
+                            ".########."
+                            "..........")]
+
+  (expect (->NoDiff map-dimensions expected-string-map) subtraction-map-fn))
+
+(let [map-dimensions (->Dimensions 10 8)
+      outer-rect (rect [1 1 5 4])
+      inner-rect (rect [4 3 8 6])
+
+      subtraction-map-fn (subtraction outer-rect inner-rect)
+
+      expected-string-map (str
+                            ".........."
+                            ".#####...."
+                            ".#####...."
+                            ".###..###."
+                            ".###..###."
+                            "....#####."
+                            "....#####."
+                            "..........")]
+
+  (expect (->NoDiff map-dimensions expected-string-map) subtraction-map-fn))
